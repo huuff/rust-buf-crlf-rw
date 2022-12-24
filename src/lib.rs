@@ -100,4 +100,17 @@ mod tests {
         assert_eq!(line, "this is a line with no crlf");
         assert_eq!(result.unwrap(), 27);
     }
+
+    #[test]
+    fn write_single_line() {
+        let target: Vec<u8> = Vec::new();
+        let mut buf_writer = BufWriter::new(target);
+
+        let result = buf_writer.write_crlf_line("single line".as_bytes());
+
+        assert!(result.is_ok());
+        
+        let bytes = buf_writer.into_inner().unwrap();
+        assert_eq!("single line\r\n", String::from_utf8(bytes).unwrap())
+    }
 }
