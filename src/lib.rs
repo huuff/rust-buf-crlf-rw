@@ -18,7 +18,7 @@ impl<T: Read> ReadCrlfLine for BufReader<T> {
            consumed += 1; 
         }
 
-        // TODO: A better err
+        // TODO: Please do not unwrap
         buffer.push_str(str::from_utf8(&fill_buf[..consumed]).unwrap());
 
         consumed += 2;
