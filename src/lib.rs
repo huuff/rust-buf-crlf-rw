@@ -47,4 +47,23 @@ mod tests {
         assert_eq!(line, "This is a text");
         assert_eq!(result.unwrap(), 16);
     }
+
+    #[test]
+    fn two_lines() {
+        // ARRANGE
+        let mut line = String::with_capacity(32);
+        let mut buf_reader = BufReader::new(
+            "This is a text\r\nwith three lines\r\nseparated by crlf".as_bytes()
+        );
+
+        let first_result = buf_reader.read_crlf_line(&mut line);
+        assert_eq!(line, "This is a text");
+        assert_eq!(first_result.unwrap(), 16);
+
+        line.clear();
+
+        let second_result = buf_reader.read_crlf_line(&mut line);
+        assert_eq!(line, "with three lines");
+        assert_eq!(second_result.unwrap(), 18);
+    }
 }
