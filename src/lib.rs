@@ -33,7 +33,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn it_works() {
+    fn single_line() {
         // ARRANGE
         let mut line = String::with_capacity(15);
         let mut buf_reader = BufReader::new(
