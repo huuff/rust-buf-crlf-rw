@@ -18,7 +18,7 @@ impl<T: Read> ReadCrlfLine for BufReader<T> {
         while consumed < fill_buf.len() // Buffer is not finished
             && (consumed == fill_buf.len()-1 // If it's the end of the buffer, just finish reading
                                              // it
-            || (fill_buf[consumed] != b'\r' && fill_buf[consumed+1] != b'\n')) // Ensure CRLF
+            || (fill_buf[consumed] != b'\r' || fill_buf[consumed+1] != b'\n')) // Ensure CRLF
                                                                                // hasn't been found
                                                                                // yet 
         {
@@ -99,6 +99,19 @@ mod tests {
 
         assert_eq!(line, "this is a line with no crlf");
         assert_eq!(result.unwrap(), 27);
+    }
+
+    #[test]
+    fn read_multiline_without_crlf_as_single_line() {
+        let mut line = String::with_capacity(128);
+        let mut buf_reader = BufReader::new(
+            "this is\nseveral lines\nseparated by newlines\nwithout carriage return".as_bytes()
+        );
+
+        let result = buf_reader.read_crlf_line(&mut line);
+
+        assert_eq!(line, "this is\nseveral lines\nseparated by newlines\nwithout carriage return");
+        assert_eq!(result.unwrap(), 67);
     }
 
     #[test]
