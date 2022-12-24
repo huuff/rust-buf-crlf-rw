@@ -113,4 +113,16 @@ mod tests {
         let bytes = buf_writer.into_inner().unwrap();
         assert_eq!("single line\r\n", String::from_utf8(bytes).unwrap())
     }
+
+    #[test]
+    fn write_multiple_lines() {
+        let target: Vec<u8> = Vec::new();
+        let mut buf_writer = BufWriter::new(target);
+
+        buf_writer.write_crlf_line("first line".as_bytes()).unwrap();
+        buf_writer.write_crlf_line("second line".as_bytes()).unwrap();
+
+        let bytes = buf_writer.into_inner().unwrap();
+        assert_eq!("first line\r\nsecond line\r\n", String::from_utf8(bytes).unwrap());
+    }
 }
