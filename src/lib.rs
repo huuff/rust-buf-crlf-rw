@@ -57,7 +57,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn single_line() {
+    fn read_single_line() {
         // ARRANGE
         let mut line = String::with_capacity(15);
         let mut buf_reader = BufReader::new(
@@ -73,7 +73,7 @@ mod tests {
     }
 
     #[test]
-    fn two_lines() {
+    fn read_two_lines() {
         let mut line = String::with_capacity(32);
         let mut buf_reader = BufReader::new(
             "This is a text\r\nwith three lines\r\nseparated by crlf".as_bytes()
@@ -91,7 +91,7 @@ mod tests {
     }
 
     #[test]
-    fn reads_to_end_when_theres_no_crlf() {
+    fn read_reads_to_end_when_theres_no_crlf() {
         let mut line = String::with_capacity(32);
         let mut buf_reader = BufReader::new("this is a line with no crlf".as_bytes());
 
