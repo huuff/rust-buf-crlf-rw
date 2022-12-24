@@ -1,4 +1,4 @@
-use std::io::{Read, BufReader, BufRead, Result};
+use std::io::{Read, Write, BufReader, BufRead, Result, BufWriter};
 use std::str;
 
 pub trait ReadCrlfLine {
@@ -37,6 +37,20 @@ impl<T: Read> ReadCrlfLine for BufReader<T> {
         return Ok(consumed);
     }
 }
+
+pub trait WriteCrlfLine {
+    fn write_crlf_line(&mut self, buf: &[u8]) -> Result<()>;
+}
+
+impl<T: Write> WriteCrlfLine for BufWriter<T> {
+    fn write_crlf_line(&mut self, buf: &[u8]) -> Result<()> {
+       self.write_all(buf)?;
+       self.write(b"\r\n")?;
+       self.flush()?;
+       Ok(())
+    } 
+}
+
 
 #[cfg(test)]
 mod tests {
