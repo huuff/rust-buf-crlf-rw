@@ -1,12 +1,13 @@
-use std::io::{Read, Write, BufReader, BufRead, Result, BufWriter};
+use std::io::{Read, Write, BufReader, BufRead, BufWriter};
 use std::str;
+use std::error::Error;
 
 pub trait ReadCrlfLine {
-    fn read_crlf_line(&mut self, buffer: &mut String) -> Result<usize>;
+    fn read_crlf_line(&mut self, buffer: &mut String) -> Result<usize, Box<dyn Error>>;
 }
 
 impl<T: Read> ReadCrlfLine for BufReader<T> {
-    fn read_crlf_line(&mut self, buffer: &mut String) -> Result<usize> {
+    fn read_crlf_line(&mut self, buffer: &mut String) -> Result<usize, Box<dyn Error>> {
         let fill_buf = self.fill_buf()?;
 
         if fill_buf.is_empty() {
@@ -25,8 +26,7 @@ impl<T: Read> ReadCrlfLine for BufReader<T> {
             consumed += 1; 
         }
 
-        // TODO: Please do not unwrap
-        buffer.push_str(str::from_utf8(&fill_buf[..consumed]).unwrap());
+        buffer.push_str(str::from_utf8(&fill_buf[..consumed])?);
 
         if consumed < fill_buf.len() {
             // Found a CRLF before the buffer ends, so we manually consume it
@@ -39,11 +39,11 @@ impl<T: Read> ReadCrlfLine for BufReader<T> {
 }
 
 pub trait WriteCrlfLine {
-    fn write_crlf_line(&mut self, buf: &[u8]) -> Result<()>;
+    fn write_crlf_line(&mut self, buf: &[u8]) -> Result<(), Box<dyn Error>>;
 }
 
 impl<T: Write> WriteCrlfLine for BufWriter<T> {
-    fn write_crlf_line(&mut self, buf: &[u8]) -> Result<()> {
+    fn write_crlf_line(&mut self, buf: &[u8]) -> Result<(), Box<dyn Error>> {
        self.write_all(buf)?;
        self.write(b"\r\n")?;
        self.flush()?;
